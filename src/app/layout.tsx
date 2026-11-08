@@ -11,9 +11,9 @@ const body = Instrument_Sans({ variable: "--font-body", subsets: ["latin"] });
 const mono = JetBrains_Mono({ variable: "--font-mono-face", subsets: ["latin"], weight: ["400", "500"] });
 
 export const metadata: Metadata = {
-  title: { default: "SIPES Paints — Ask for the right paint", template: "%s · SIPES Paints" },
+  title: { default: "UBMC Group — paints, coatings & construction chemicals", template: "%s · UBMC Group" },
   description:
-    "Interior, exterior, decorative and wood-care paints from SIPES. Ask the SIPES assistant by voice or text and go straight to the right product.",
+    "UBMC Group: SIPES, SiTech Coatings, Transocean Coatings, PerBuild, Swift Paints and UBMC Color Center. Ask Mr. SIPES by voice or text and go straight to the right brand or product.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -33,7 +33,7 @@ export function MascotHero() {
       <div className="hero-grain" aria-hidden />
       <div className="hero-splash" aria-hidden />
 
-      <div className="wrap relative grid min-h-[100svh] grid-cols-1 items-end gap-6 pt-24 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center md:gap-10 md:pt-16">
+      <div className="wrap relative grid min-h-[100svh] grid-cols-1 items-end gap-6 pt-24 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:items-center md:gap-10 md:pt-16">
         {/* The mascot stands on the stage at the bottom of the hero. */}
         <motion.div
           className="order-2 flex justify-center md:order-1 md:self-end"
@@ -42,7 +42,7 @@ export function MascotHero() {
           transition={{ type: "spring", stiffness: 120, damping: 15, delay: 0.15 }}
         >
           <Mascot
-            height="clamp(330px, 64svh, 660px)"
+            height="clamp(440px, 80svh, 860px)"
             className="mascot-hero"
             priority
             onClick={a.listen}

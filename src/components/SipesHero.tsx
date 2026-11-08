@@ -36,7 +36,7 @@ export function SipesHero() {
             alt={`${MASCOT.name} with arms crossed`}
             width={MASCOT.poses.armsCrossed.width}
             height={MASCOT.poses.armsCrossed.height}
-            className="mascot-img h-[min(440px,52svh)] w-auto"
+            className="mascot-img h-[min(580px,72svh)] w-auto"
           />
         </div>
       </div>

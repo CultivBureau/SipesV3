@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
-import { brand, company } from "@/data/site";
+import { group } from "@/data/ubmc";
 
 interface Item {
   href: string;
@@ -17,83 +17,74 @@ interface Group {
   columns: { title?: string; items: Item[] }[];
 }
 
-// Mirrors the menu on ubmcgroup.com/sipes/en/, pointed at this site's pages.
+// UBMC Group first; SIPES is one brand inside it with its own sub-section.
 const MENU: Group[] = [
   {
-    label: "About",
-    match: ["/about", "/sipes/projects", "/sipes/news", "/sipes/faq"],
+    label: "About UBMC",
+    match: ["/about", "/contact"],
     columns: [
       {
         items: [
-          { href: "/about", label: "About us" },
-          { href: "/sipes/projects", label: "Projects" },
-          { href: "/sipes/news", label: "News and events" },
-          { href: "/sipes/faq", label: "FAQ" },
+          { href: "/about", label: "Who we are" },
+          { href: "/about#projects", label: "Projects" },
+          { href: "/contact", label: "Contact" },
           { href: "/contact", label: "Careers" },
         ],
       },
     ],
   },
   {
-    label: "Inspiration",
-    match: ["/sipes/catalogue"],
+    label: "Brands",
+    match: ["/brands"],
     columns: [
       {
+        title: "Paints & coatings",
         items: [
-          { href: "/sipes/catalogue", label: "Catalogue" },
-          { href: "/sipes/projects", label: "Gallery" },
-          { href: "/sipes/colours", label: "Colour catalogue" },
+          { href: "/sipes", label: "SIPES" },
+          { href: "/brands/sitech", label: "SiTech Coatings" },
+          { href: "/brands/transocean", label: "Transocean Coatings" },
+          { href: "/brands/swift", label: "Swift Paints" },
+        ],
+      },
+      {
+        title: "Building & retail",
+        items: [
+          { href: "/brands/perbuild", label: "PerBuild" },
+          { href: "/stores", label: "UBMC Color Center" },
+          { href: "/brands", label: "All brands" },
         ],
       },
     ],
   },
   {
-    label: "Products",
-    match: ["/sipes/products", "/sipes/product/"],
+    label: "SIPES",
+    match: ["/sipes"],
     columns: [
       {
-        title: "Interiors",
+        title: "Products",
         items: [
-          { href: "/sipes/products?family=interior#cat-emulsions", label: "Emulsions" },
-          { href: "/sipes/products?family=interior#cat-alkyds", label: "Alkyds" },
-          { href: "/sipes/products?family=interior#cat-varnishes", label: "Varnishes" },
+          { href: "/sipes", label: "SIPES home" },
+          { href: "/sipes/products?family=interior", label: "Interior" },
+          { href: "/sipes/products?family=exterior", label: "Exterior" },
           { href: "/sipes/products?family=effects", label: "Special effects" },
+          { href: "/sipes/products?family=woodcare", label: "Wood care" },
         ],
       },
-      { title: "Exteriors", items: [{ href: "/sipes/products?family=exterior", label: "Facade coatings" }] },
       {
-        title: "WoodCare",
+        title: "Tools",
         items: [
-          { href: "/sipes/products?family=woodcare#cat-nitro", label: "Nitro" },
-          { href: "/sipes/products?family=woodcare#cat-polyester", label: "Polyester" },
-          { href: "/sipes/products?family=woodcare#cat-polyurethane", label: "Polyurethane" },
-          { href: "/sipes/products?family=woodcare#cat-wood-stains", label: "Wood stains" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Tools",
-    match: ["/sipes/calculator", "/sipes/colours"],
-    columns: [
-      {
-        items: [
-          { href: "/sipes/calculator", label: "Calculator" },
           { href: "/sipes/colours", label: "Colour catalogue" },
-          { href: "/sipes/colours", label: "Room colouring" },
+          { href: "/sipes/calculator", label: "Paint calculator" },
+          { href: "/sipes/catalogue", label: "Catalogues" },
+          { href: "/sipes/loyalty", label: "SIPES Points" },
         ],
       },
-    ],
-  },
-  {
-    label: "Contact",
-    match: ["/contact", "/stores"],
-    columns: [
       {
+        title: "More",
         items: [
-          { href: "/contact", label: "Head office" },
-          { href: "/stores", label: "Branches and stores" },
-          { href: "https://ubmcgroup.com/sipes/en/store-locator/", label: "Store locator" },
+          { href: "/sipes/projects", label: "SIPES projects" },
+          { href: "/sipes/news", label: "News and events" },
+          { href: "/sipes/faq", label: "FAQ" },
         ],
       },
     ],
@@ -126,8 +117,8 @@ export function Nav() {
       }`}
     >
       <nav className="wrap flex h-[68px] items-center gap-4" aria-label="Main">
-        <Link href="/" className="shrink-0" aria-label="SIPES home">
-          <Image src={brand.logo} alt="SIPES" width={200} height={96} priority className="h-11 w-auto" />
+        <Link href="/" className="shrink-0" aria-label="UBMC Group home">
+          <Image src={overHero ? group.logoWhite : group.logo} alt="UBMC" width={500} height={118} priority className="h-8 w-auto sm:h-9" />
         </Link>
 
         <ul className="ml-auto hidden items-center gap-0.5 lg:flex">
@@ -166,20 +157,20 @@ export function Nav() {
           })}
           <li>
             <Link
-              href="/sipes/loyalty"
+              href="/stores"
               className={`rounded-full px-3.5 py-2 text-[14.5px] font-medium ${overHero ? "hover:bg-white/15" : "hover:bg-primer"}`}
             >
-              Loyalty program
+              Stores
             </Link>
           </li>
         </ul>
         <a
-          href={`tel:${company.hotline}`}
+          href={`tel:${group.hotline}`}
           className={`hidden rounded-full px-4 py-2 text-[14px] font-semibold lg:inline-flex ${
             overHero ? "bg-white text-ink" : "bg-sipes text-white"
           }`}
         >
-          Hotline {company.hotline}
+          Hotline {group.hotline}
         </a>
         <button
           type="button"
@@ -214,9 +205,9 @@ export function Nav() {
                 </div>
               </details>
             ))}
-            <Link href="/sipes/loyalty" className="rounded-xl px-3 py-3 text-[17px] font-medium hover:bg-primer">Loyalty program</Link>
-            <a href={`tel:${company.hotline}`} className="mt-2 rounded-xl bg-sipes px-3 py-3 text-center text-[17px] font-semibold text-white">
-              Call {company.hotline}
+            <Link href="/stores" className="rounded-xl px-3 py-3 text-[17px] font-medium hover:bg-primer">Stores</Link>
+            <a href={`tel:${group.hotline}`} className="mt-2 rounded-xl bg-sipes px-3 py-3 text-center text-[17px] font-semibold text-white">
+              Call {group.hotline}
             </a>
           </div>
         </div>

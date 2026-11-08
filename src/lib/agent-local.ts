@@ -3,6 +3,7 @@
 
 import { products, productBySlug, type Product } from "@/data/products";
 import { company, faqs, projects } from "@/data/site";
+import { brandBySlug, group, type BrandSlug } from "@/data/ubmc";
 
 export interface AgentAnswer {
   reply: string;
@@ -88,14 +89,14 @@ const has = (q: string, words: string[]) =>
   words.some((w) => new RegExp(`\\b${w}`, "i").test(q));
 
 const WORDS = {
-  price: ["price", "cost", "how much", "egp", "pound", "cheap", "expensive", "budget"],
+  price: ["price", "cost", "how much", "egp", "pound", "expensive"],
   calc: ["calculat", "how many lit", "how much paint", "do i need", "need for", "quantity", "litre", "liter", "m2", "m²", "square met", "estimate", "area"],
   store: ["store", "branch", "shop", "buy", "near", "where can i get", "distributor", "dealer", "franchise", "showroom", "warehouse", "factory"],
   contact: ["contact", "phone", "call", "hotline", "email", "number", "talk to", "support"],
   hours: ["hours", "open", "closed", "working time", "when are you"],
   colour: ["colour", "color", "shade", "palette", "catalogue", "catalog", "swatch"],
   projects: ["project", "reference", "case stud", "portfolio", "hotel", "compound"],
-  about: ["about", "history", "who are", "company", "ubmc", "since", "founded", "mission", "vision"],
+  about: ["about ubmc", "history", "who are", "company", "ubmc", "since", "founded", "mission", "vision", "group", "stand for"],
   points: ["point", "loyalty", "reward", "scratch", "qr", "app"],
   faq: ["faq", "question"],
   jobs: ["job", "career", "cv", "hiring", "vacanc", "intern"],
@@ -141,6 +142,31 @@ const FAMILIES: { words: string[]; family: string; label: string }[] = [
   { words: ["all products", "your products", "catalogue of products", "product range", "what do you sell", "what products"], family: "", label: "" },
 ];
 
+// Which UBMC brand a question belongs to. Checked before SIPES products.
+const BRAND_WORDS: { brand: BrandSlug; words: string[] }[] = [
+  { brand: "perbuild", words: ["perbuild", "per build", "waterproof", "admixture", "concrete repair", "mortar", "grout", "tile adhesive", "cementitious", "construction chemical", "insulat"] },
+  { brand: "transocean", words: ["transocean", "marine", "ship", "boat", "yacht", "hull", "antifouling", "offshore", "anticorros", "pipeline", "tank lining", "shipyard"] },
+  { brand: "sitech", words: ["sitech", "si tech", "epoxy", "self-level", "self level", "industrial floor", "floor coating", "xtr", "antibacterial", "cooling paint", "warehouse floor"] },
+  { brand: "swift", words: ["swift", "cheap", "economical", "budget", "affordable", "low cost", "low-cost"] },
+  { brand: "color-center", words: ["color center", "colour center", "color centre", "colour centre", "masria", "nearest store", "visit a store", "showroom"] },
+];
+
+function brandAnswer(slug: BrandSlug): AgentAnswer {
+  const b = brandBySlug(slug)!;
+  const reply =
+    slug === "color-center"
+      ? `That's our UBMC Color Center stores: Heliopolis, El Bahr El Aazam, Faisal and El Sudan in Mohandessin, with specialists to help you choose. Call ${group.hotline} to check hours.`
+      : `That's a job for ${b.name}, our ${b.area.toLowerCase()} brand. ${b.tagline} Here's what it offers.`;
+  return {
+    source: "local",
+    reply,
+    route: b.href,
+    product: null,
+    mood: "excited",
+    suggestions: [`What does ${b.name} offer?`, "Where can I buy it?", "Show me all UBMC brands"],
+  };
+}
+
 const GENERIC = new Set(["the", "new", "hospital", "international", "school", "city", "road"]);
 // The distinctive word in a project name, e.g. "Sawary" in "Sawary – Alexandria".
 const projectKey = (name: string) =>
@@ -176,7 +202,12 @@ export const pageSuggestions = (pathname: string): string[] => {
   if (pathname.startsWith("/sipes/colours")) return ["Which paint takes these colours?", "Show me Elegance tones", "Calculate paint for my room"];
   if (pathname.startsWith("/sipes/calculator")) return ["Which paint for a kitchen?", "Where can I buy it?", "What is Si-Tone 700 used for?"];
   if (pathname.startsWith("/stores")) return ["What are your working hours?", "What is the hotline?", "How do I become a distributor?"];
-  return ["Tell me about Si-Tone Silk", "Paint for my facade", "Varnish for a parquet floor"];
+  if (pathname.startsWith("/brands/")) {
+    const b = brandBySlug(pathname.split("/")[2] ?? "");
+    if (b) return [`What does ${b.name} offer?`, `Is ${b.name} right for my project?`, "Where can I buy it?"];
+  }
+  if (pathname.startsWith("/sipes")) return ["Tell me about Si-Tone Silk", "Paint for my facade", "Varnish for a parquet floor"];
+  return ["Which brand does waterproofing?", "Coatings for a ship hull", "Washable paint for a kids' room"];
 };
 
 function isAboutCurrent(q: string) {
@@ -187,12 +218,15 @@ export function localAnswer(message: string, ctx: AgentContext): AgentAnswer {
   const q = message.trim();
   const base = { source: "local" as const };
   if (!q) {
-    return { ...base, reply: "Ask me about any SIPES paint, colour, store or project.", route: null, product: null, suggestions: pageSuggestions(ctx.pathname) };
+    return { ...base, reply: "Ask me about any UBMC brand, product, store or project.", route: null, product: null, suggestions: pageSuggestions(ctx.pathname) };
   }
 
   // Questions about the category itself win over a product-name match.
   if (has(q, ["wallpaper"])) return faqAnswer("wallpaper");
-  if (has(q, ["insulat", "heat"])) return faqAnswer("insulation");
+  if (has(q, ["heat insulat", "keep the heat", "heat out"])) return { ...faqAnswer("insulation"), route: "/brands/perbuild" };
+  if (has(q, ["brands", "sister brand", "subsidiar", "which brand"])) {
+    return { ...base, reply: "UBMC has six brands: SIPES for decorative paint, SiTech for professional coatings, Transocean for marine protection, PerBuild for construction chemicals, Swift for an economical range, and our UBMC Color Center stores.", route: "/brands", product: null, suggestions: ["Which brand does waterproofing?", "Coatings for a ship hull", "Tell me about SIPES"] };
+  }
 
   const project = projects.find((x) => has(q, [projectKey(x.name)]));
   if (project) {
@@ -219,13 +253,16 @@ export function localAnswer(message: string, ctx: AgentContext): AgentAnswer {
     return { ...base, reply: describe(p), route: `/sipes/product/${p.slug}`, product: p.slug, suggestions: productSuggestions(p) };
   }
 
-  if (has(q, WORDS.hours)) return { ...base, reply: `SIPES head office hours: ${company.hours} The hotline is ${company.hotline}.`, route: "/contact", product: null, suggestions: ["Where are your branches?", "What's your email?"] };
+  // A named SIPES product wins; otherwise check whether another UBMC brand fits.
+  for (const b of BRAND_WORDS) if (has(q, b.words)) return brandAnswer(b.brand);
+
+  if (has(q, WORDS.hours)) return { ...base, reply: `UBMC head office hours: ${group.hours} The hotline for every brand is ${group.hotline}.`, route: "/contact", product: null, suggestions: ["Where are your branches?", "What's your email?"] };
   if (has(q, WORDS.jobs)) return { ...base, reply: `Send your CV to ${company.careersEmail}. SIPES posts current openings on its careers page.`, route: "/contact", product: null, suggestions: ["Tell me about SIPES", "Where is the head office?"] };
   if (has(q, ["dry", "drying"])) return faqAnswer("dry");
   if (has(q, ["data sheet", "tds", "technical"])) return faqAnswer("tds");
   if (has(q, WORDS.calc)) return { ...base, reply: "Enter your wall width and height, doors and windows, and pick a paint. I'll estimate litres and pack quantities for two coats.", route: "/sipes/calculator", product: null, suggestions: ["Which paint for a living room?", "How much paint for a bedroom?"] };
-  if (has(q, WORDS.contact)) return { ...base, reply: `Call the SIPES hotline on ${company.hotline}, email ${company.email}, or visit the head office at ${company.address}.`, route: "/contact", product: null, suggestions: ["What are your working hours?", "Where are your branches?"] };
-  if (has(q, WORDS.store)) return { ...base, reply: "Here are SIPES locations across Egypt: the Heliopolis store, three factories and regional warehouses. Call 19852 to find the nearest retailer.", route: "/stores", product: null, suggestions: ["What are your working hours?", "How do I become a distributor?"] };
+  if (has(q, WORDS.contact)) return { ...base, reply: `Call ${group.hotline} for any UBMC brand, email ${group.email} (or ${company.email} for SIPES), or visit our headquarters at ${group.address}.`, route: "/contact", product: null, suggestions: ["What are your working hours?", "Where are your branches?"] };
+  if (has(q, WORDS.store)) return { ...base, reply: "Visit a UBMC Color Center in Heliopolis, El Bahr El Aazam, Faisal or Mohandessin, or call 19852 to find the nearest dealer. Here are our stores, factories and warehouses.", route: "/stores", product: null, suggestions: ["What are your working hours?", "How do I become a distributor?"] };
   if (has(q, WORDS.points)) return { ...base, reply: "SIPES Points lets you scan the scratch-off QR code on eligible products, collect points in the app and redeem them for discounts and rewards.", route: "/sipes/loyalty", product: null, suggestions: ["Which products carry points?", "Where can I buy SIPES?"] };
   if (has(q, WORDS.projects)) return { ...base, reply: "SIPES coatings are on hospitals, hotels and coastal compounds across Egypt, from Magdy Yacoub Hospital to Naia Bay. Here are the reference projects.", route: "/sipes/projects", product: null, suggestions: ["What was used at Sawary?", "Paint for a facade"] };
 
@@ -244,14 +281,14 @@ export function localAnswer(message: string, ctx: AgentContext): AgentAnswer {
     }
   }
 
-  if (has(q, WORDS.about)) return { ...base, reply: "SIPES has made paint since the trademark was registered in 1947, and is part of the UBMC group with three factories in Egypt. Here's the story.", route: "/about", product: null, suggestions: ["Show me your projects", "Where are your factories?"], weak: true };
+  if (has(q, WORDS.about)) return { ...base, reply: "UBMC stands for Universal Building Materials and Chemicals. We make paints, coatings and construction chemicals in three Egyptian factories, sell through six brands, and serve Egypt plus 15 other countries.", route: "/about", product: null, suggestions: ["What brands does UBMC have?", "Where are your factories?"], weak: true };
   if (has(q, WORDS.price)) return faqAnswer("price");
   if (has(q, WORDS.faq)) return { ...base, reply: "Here are the most common questions customers ask SIPES.", route: "/sipes/faq", product: null, suggestions: pageSuggestions("/sipes/faq") };
-  if (has(q, ["hi", "hello", "hey", "salam", "help"])) return { ...base, reply: "Hi! Tell me what you're painting, or name a SIPES product, and I'll take you straight to it.", route: null, product: null, suggestions: pageSuggestions(ctx.pathname) };
+  if (has(q, ["hi", "hello", "hey", "salam", "help"])) return { ...base, reply: "Hi, I'm Mr. SIPES! Tell me about your project, a paint, a coating or a store you're after, and I'll take you to the right UBMC brand.", route: null, product: null, suggestions: pageSuggestions(ctx.pathname) };
 
   return {
     ...base,
-    reply: "I couldn't match that to a SIPES product or page. Try naming a product, the surface you're painting, or what you need, like a store or colour advice.",
+    reply: "I couldn't match that to a UBMC brand, product or page. Tell me what you're working on, name a product, or ask about a store.",
     route: null,
     product: null,
     suggestions: ["Tell me about Si-Tone Silk", "Paint for my facade", "Where can I buy SIPES?"],

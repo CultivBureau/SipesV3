@@ -158,3 +158,20 @@ export function speakable(md: string, maxSentences = 3) {
   const sentences = plain.match(/[^.!?]+[.!?]+/g) ?? [plain];
   return sentences.slice(0, maxSentences).map((x) => x.trim()).join(" ");
 }
+
+/** For FAQ-style sections ("**Q:** … A: …"), pick the answer whose question best matches. */
+export function bestAnswer(md: string, query: string): string | null {
+  const pairs = [...md.matchAll(/\*\*Q:\s*([\s\S]*?)\*\*\s*\n?\s*A:\s*([\s\S]*?)(?=\n\s*\*\*Q:|$)/g)];
+  if (!pairs.length) return null;
+  const q = new Set(tokenize(query));
+  let best: string | null = null;
+  let bestScore = 0;
+  for (const [, question, answer] of pairs) {
+    const score = tokenize(question).filter((t) => q.has(t)).length;
+    if (score > bestScore) {
+      bestScore = score;
+      best = answer;
+    }
+  }
+  return best ? speakable(best) : null;
+}

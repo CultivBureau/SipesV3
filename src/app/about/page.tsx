@@ -1,24 +1,21 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/PageHeader";
 import Image from "next/image";
-import { milestones, company, groupBrands, brand } from "@/data/site";
+import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
+import { brands, figures, group, groupMilestones, groupProjects, principles } from "@/data/ubmc";
 
-export const metadata: Metadata = { title: "About SIPES" };
+export const metadata: Metadata = { title: "About UBMC" };
 
 export default function AboutPage() {
   return (
     <>
-      <PageHeader
-        eyebrow="About SIPES"
-        title="Making paint for the region since 1947."
-        lead={`SIPES makes paints and coatings for homeowners, painters, architects and contractors, and exports across the MENA region. It is part of ${company.group}, which runs three factories in Egypt.`}
-      />
+      <PageHeader eyebrow="About UBMC Group" title="Building materials and chemicals, made in Egypt." lead={group.summary} />
 
       <section className="wrap grid gap-12 py-16 lg:grid-cols-3">
         {[
-          { h: "Strategy", t: "Follow what customers actually need, and adapt premium products to practical jobs." },
-          { h: "Vision", t: "A significant international presence in paints and coatings, with care for ecological balance and quality." },
-          { h: "Mission", t: "Use technology, efficient operations and R&D to develop coatings that solve real customer problems." },
+          { h: "Who we are", t: `${group.legalName} (UBMC): one group for decorative paint, specialist and protective coatings, construction chemicals and retail advice.` },
+          { h: "Vision", t: "To be recognised globally as a sustainable and influential industry participant, while building long-term customer partnerships." },
+          { h: "Mission", t: "A first-class customer experience through quality products, service excellence, integrity and pride." },
         ].map((x) => (
           <div key={x.h}>
             <p className="eyebrow">{x.h}</p>
@@ -27,36 +24,81 @@ export default function AboutPage() {
         ))}
       </section>
 
-      <section className="border-y border-chalk bg-primer py-16">
+      <section className="bg-ink py-16 text-white">
         <div className="wrap">
-          <h2 className="font-display text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold tracking-tight">Group milestones</h2>
-          <ol className="mt-10 grid gap-px overflow-hidden rounded-[20px] bg-chalk sm:grid-cols-2 lg:grid-cols-4">
-            {milestones.map((m) => (
-              <li key={m.year} className="bg-white p-6">
-                <p className="font-display text-3xl font-bold tracking-tight text-tint">{m.year}</p>
-                <p className="mt-2 text-[15px] leading-relaxed text-graphite">{m.text}</p>
+          <p className="eyebrow !text-white/60">Manufacturing, R&amp;D and reach</p>
+          <ul className="mt-6 grid grid-cols-2 gap-8 sm:grid-cols-3">
+            {figures.map((f) => (
+              <li key={f.label}>
+                <p className="font-display text-[clamp(1.8rem,4vw,2.8rem)] font-bold tracking-[-0.03em]">{f.value}</p>
+                <p className="mt-1 text-[15px] text-white/70">{f.label}</p>
               </li>
             ))}
-          </ol>
+          </ul>
+          <p className="mt-10 max-w-[70ch] text-[15.5px] leading-relaxed text-white/75">
+            An in-house R&amp;D department develops new formulations, backed by quality control and industrial safety standards. UBMC
+            supplies customers in Egypt through distribution, facilities and warehouses, and exports across the Middle East and Africa.
+            Figures are as published by UBMC.
+          </p>
         </div>
       </section>
 
       <section className="wrap py-16">
-        <h2 className="font-display text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold tracking-tight">The UBMC family</h2>
-        <p className="mt-3 max-w-[60ch] text-[16px] text-graphite">Brands with overlapping but separate specialities. This site covers SIPES products only.</p>
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {groupBrands.map((b) => (
-            <li key={b.name} className="flex flex-col rounded-[20px] bg-primer p-6">
-              <Image src={b.logo} alt={b.name} width={326} height={200} className="h-20 w-auto self-start" />
-              <h3 className="mt-3 font-display text-[18px] font-semibold tracking-tight">{b.name}</h3>
-              <p className="mt-2 text-[15px] text-graphite">{b.text}</p>
+        <h2 className="font-display text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold tracking-tight">What we stand for</h2>
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {principles.map((p, i) => (
+            <li key={p} className="rounded-[20px] bg-primer p-6">
+              <p className="font-mono text-[12px] text-sipes">0{i + 1}</p>
+              <p className="mt-3 text-[16px] leading-snug">{p}</p>
             </li>
           ))}
-          <li className="flex flex-col justify-center rounded-[20px] bg-ink p-6 text-white">
-            <Image src={brand.ubmcLogoWhite} alt="UBMC" width={500} height={118} className="h-10 w-auto self-start" />
-            <p className="mt-4 text-[15px] text-white/75">Plus the UBMC Color Center for colour selection and tinting.</p>
-          </li>
         </ul>
+      </section>
+
+      <section className="border-y border-chalk bg-primer py-16">
+        <div className="wrap">
+          <h2 className="font-display text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold tracking-tight">Milestones</h2>
+          <ol className="mt-10 grid gap-px overflow-hidden rounded-[20px] bg-chalk sm:grid-cols-2 lg:grid-cols-4">
+            {groupMilestones.map((m) => (
+              <li key={m.year} className="bg-white p-6">
+                <p className="font-display text-3xl font-bold tracking-tight text-sipes">{m.year}</p>
+                <p className="mt-2 text-[15px] leading-relaxed text-graphite">{m.text}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-4 text-[13.5px] text-graphite">1947 marks the SIPES trademark, not necessarily the founding of today’s UBMC company.</p>
+        </div>
+      </section>
+
+      <section className="wrap grid gap-12 py-16 lg:grid-cols-[1fr_1.4fr]" id="projects">
+        <div>
+          <h2 className="font-display text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold tracking-tight">Selected projects</h2>
+          <p className="mt-3 text-[16px] text-graphite">Developments UBMC showcases on its corporate project page.</p>
+          <ul className="mt-6 grid gap-2">
+            {groupProjects.map((p) => (
+              <li key={p} className="rounded-2xl bg-primer px-5 py-4 font-display text-[17px] font-semibold tracking-tight">
+                {p}
+              </li>
+            ))}
+          </ul>
+          <Link href="/sipes/projects" className="btn-ghost mt-5">SIPES reference projects</Link>
+        </div>
+        <div>
+          <h2 className="font-display text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold tracking-tight">The UBMC family</h2>
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+            {brands.map((b) => (
+              <li key={b.slug}>
+                <Link href={b.href} className="flex items-center gap-4 rounded-[18px] bg-primer p-4 transition hover:bg-chalk/60">
+                  <Image src={b.logo} alt="" width={326} height={200} className="h-12 w-auto" />
+                  <span>
+                    <span className="block font-display text-[16px] font-semibold tracking-tight">{b.name}</span>
+                    <span className="block text-[13.5px] text-graphite">{b.area}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
     </>
   );

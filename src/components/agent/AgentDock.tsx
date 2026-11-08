@@ -131,7 +131,7 @@ export function AgentDock() {
           {showPanel && (
             <motion.section
               key="panel"
-              aria-label="SIPES assistant answer"
+              aria-label={`${MASCOT.name} answer`}
               initial={reduce ? false : { opacity: 0, y: 20, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={reduce ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.96 }}
@@ -263,7 +263,7 @@ export function AgentDock() {
         {/* The Original Bottom Dock Pill */}
         <form onSubmit={submit} className="dock-surface dock-pill flex items-center gap-2 rounded-full p-2 pl-5">
           <label htmlFor="agent-input" className="sr-only">
-            Ask Sami
+            Ask {MASCOT.name}
           </label>
           {a.status === "listening" ? (
             <p className="min-w-0 flex-1 truncate text-[16px] text-ink" aria-live="polite">
@@ -275,7 +275,7 @@ export function AgentDock() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               onFocus={() => (a.answer || a.notice) && a.setOpen(true)}
-              placeholder={`Ask ${MASCOT.name} about a paint, colour, surface or store`}
+              placeholder={`Ask ${MASCOT.name} about any UBMC brand, product or store`}
               autoComplete="off"
               className="min-w-0 flex-1 bg-transparent text-[16px] text-ink outline-none placeholder:text-graphite"
             />

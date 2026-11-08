@@ -171,7 +171,7 @@ export default function SipesPage() {
       <section className="wrap py-20 sm:py-28">
         <div className="grid items-center gap-10 md:grid-cols-[1fr_1.1fr]">
           <ScrollReveal>
-            <div className="relative mx-auto w-full max-w-[460px] -rotate-2 overflow-hidden rounded-[28px] shadow-[0_30px_60px_-30px_rgb(11_16_38/0.6)] ring-8 ring-white">
+            <div className="relative mx-auto w-full max-w-[480px] lg:max-w-[540px] -rotate-2 overflow-hidden rounded-[28px] shadow-[0_30px_60px_-30px_rgb(11_16_38/0.6)] ring-8 ring-white">
               <Image src={MASCOT.poses.van.src} alt={`${MASCOT.name} waving from the red SIPES van`} width={MASCOT.poses.van.width} height={MASCOT.poses.van.height} className="h-auto w-full" />
             </div>
           </ScrollReveal>
