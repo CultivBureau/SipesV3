@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ArrowUpRight, Check, Info, MessageCircle } from "lucide-react";
 import { AskButton } from "@/components/agent/AskButton";
 import { MASCOT } from "@/lib/mascot";
@@ -20,8 +21,16 @@ export async function generateMetadata(props: PageProps<"/brands/[slug]">): Prom
   return b ? { title: b.name, description: b.positioning } : {};
 }
 
-export default async function BrandPage(props: PageProps<"/brands/[slug]">) {
-  const { slug } = await props.params;
+export default function BrandPage(props: PageProps<"/brands/[slug]">) {
+  return (
+    <Suspense fallback={<BrandSkeleton />}>
+      <BrandContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function BrandContent({ params }: Pick<PageProps<"/brands/[slug]">, "params">) {
+  const { slug } = await params;
   const b = HERE.find((x) => x.slug === slug);
   if (!b) notFound();
   const others = brands.filter((x) => x.slug !== b.slug);
@@ -145,5 +154,34 @@ export default async function BrandPage(props: PageProps<"/brands/[slug]">) {
         </div>
       </section>
     </>
+  );
+}
+
+function BrandSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <section className="relative overflow-hidden bg-ink/90 pb-14 pt-28 text-white sm:pb-20 sm:pt-36">
+        <div className="wrap grid items-end gap-10 md:grid-cols-[1.4fr_1fr]">
+          <div>
+            <div className="h-4 w-36 rounded bg-white/20" />
+            <div className="mt-4 h-12 w-64 rounded-2xl bg-white/20" />
+            <div className="mt-5 h-6 w-96 rounded bg-white/20" />
+            <div className="mt-7 flex flex-wrap gap-3">
+              <div className="h-11 w-40 rounded-full bg-white/20" />
+              <div className="h-11 w-44 rounded-full bg-white/20" />
+            </div>
+          </div>
+          <div className="h-28 w-44 rounded-[24px] bg-white/10 md:justify-self-end" />
+        </div>
+      </section>
+      <div className="wrap grid gap-12 py-16 lg:grid-cols-[1.4fr_1fr]">
+        <div className="space-y-4">
+          <div className="h-6 w-32 rounded bg-chalk" />
+          <div className="h-16 w-full rounded-2xl bg-primer" />
+          <div className="h-16 w-full rounded-2xl bg-primer" />
+        </div>
+        <div className="h-64 rounded-[22px] bg-primer" />
+      </div>
+    </div>
   );
 }
